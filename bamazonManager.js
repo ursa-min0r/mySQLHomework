@@ -32,27 +32,25 @@ function start() {
                 "Add to Inventory",
                 "Add New Product"
             ]
-        })
-
-    switch (start) {
-        case "View Products for Sale":
-            viewProducts()
-            break;
-        case "View Low Inventory":
-            lowInventory()
-            break;
-        case "Add to Inventory":
-            addInventory()
-            break;
-        case "Add New Product":
-            addProduct()
-            break;
-        default:
-            break;
-    }
-
-};
-
+        }).then(function (answers) {
+            switch (answers.managerOpps) {
+                case "View Products for Sale":
+                    viewProducts()
+                    break;
+                case "View Low Inventory":
+                    lowInventory()
+                    break;
+                case "Add to Inventory":
+                    addInventory()
+                    break;
+                case "Add New Product":
+                    addProduct()
+                    break;
+                default:
+                    break;
+            };
+        });
+}
 function viewProducts() {
     console.log("--------------------\n");
     console.log("Available Products\n");
@@ -60,31 +58,20 @@ function viewProducts() {
         if (err) throw err;
 
         console.table(res);
-        connection.end();
+        // connection.end();
+        start();
     });
 }
 
 function lowInventory() {
 
-    connection.query("SELECT * FROM products", function (err, results) {
+
+    connection.query(`SELECT * FROM bamazon_db.products
+    where inventory <= 5`, function (err, results) {
         if (err) throw err;
+        console.table(results);
 
-        inquirer
-            .prompt([
-                {
-                    name: "choice",
-                    type: "rawlist",
-                    choices: function () {
-                        var choiceArray = [];
-                        for (var i = 0; i < results.length; i++) {
-                            choiceArray.push(results[i].item_name);
-                        }
-                        return choiceArray;
-                    },
-                    message: "Inventory Is Low On These Items, Please Restock."
-                },
-            ])
-
+        start();
     });
 };
 
@@ -99,9 +86,9 @@ function addProduct() {
                 choices: ["YES", "NO"]
             },
             {
-                name: "category",
+                name: "department",
                 type: "list",
-                message: "Select Category For New Item:",
+                message: "Select Department For New Item:",
                 choices: [
                     "Acessories",
                     "Sporting Goods",
@@ -119,40 +106,33 @@ function addProduct() {
 
             },
             {
-                name: "itemSKU",
-                type: "input",
-                message: "Assign SKU For New Item:"
-
-            },
-            {
                 name: "price",
                 type: "input",
                 message: "Input Price For New Item:",
+            },
+            {
+                name: "inventory",
+                type: "input",
+                message: "Input Quantity For New Item:"
 
-                validate: function (value) {
-                    if (isNaN(value) === false) {
-                        return true;
-                    }
-                    return false;
-                }
-            }
+            },
         ])
         .then(function (answer) {
 
             connection.query(
-                "Confirm New Item",
+                "Insert into products set ?",
                 {
-                    item_name: answer.item,
-                    category: answer.category,
-                    addItem: answer.addItem,
-                    itemSKU: answer.itemSKU
+                    product: answer.addItem,
+                    inventory: answer.inventory,
+                    department: answer.department,
+                    price: answer.price
                 },
                 function (err) {
                     if (err) throw err;
                     console.log("--------------------\n");
                     console.log("New Item Added To Inventory\n");
 
-                    readProducts();
+                    start();
                 }
             );
         });
@@ -169,42 +149,45 @@ function addInventory() {
                 choices: ["YES", "NO"]
             },
             {
-                name: "selectInv",
-                type: "list",
-                message: "Add Inventory To These Items:",
-                choices: function () {
-                    var choiceArray = [];
-                    for (var i = 0; i < results.length; i++) {
-                        choiceArray.push(results[i].item_name);
-                    }
-                    return choiceArray;
-                },
+                name: "inputInv",
+                type: "input",
+                message: "Input Item:",
             },
             {
                 name: "addInv",
                 type: "input",
                 message: "Input Inventory Quantity For Selected Item:",
-            }
+            },
+            {
+                name: "inputPrice",
+                type: "input",
+                message: "Input Price:",
+            },
+            {
+                name: "inputDepo",
+                type: "input",
+                message: "Input Department:",
+            },
         ])
         .then(function (answer) {
 
             connection.query(
-                "Add Inventory To These Item(s)?",
+                "Insert into products set ?",
                 {
-                    item_name: answer.item,
-                    category: answer.category,
-                    selectInv: answer.selectInv,
-                    addInv: answer.addInv
+                    product: answer.inputInv,
+                    inventory: answer.addInv,
+                    department: answer.inputDepo,
+                    price: answer.inputPrice
                 },
+
                 function (err) {
                     if (err) throw err;
                     console.log("--------------------\n");
                     console.log("Inventory Successfully Updated.\n");
 
-                    readProducts();
+                    start();
                 }
             );
         });
-}
-
+};
 
