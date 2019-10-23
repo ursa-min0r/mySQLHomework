@@ -43,26 +43,36 @@ function purchasePrompt(){
 		message:"How Many Items Do You Wish To Purchase?",
 	},
 
- ]).then(function(answers){
- 	var quantityNeeded = answers.Quantity;
- 	purchaseOrder(quantityNeeded);
- });
+ ]).then(function(answers) {
+	var quantityNeeded = answers.orderQuantity
+	var idRequested = answers.orderItem
+	purchaseOrder(idRequested, quantityNeeded);
+})
 };
 
-function purchaseOrder(amtNeeded){
-	connection.query('Select * FROM products', function(err,res){
-		if(err){console.log(err)};
-		if(amtNeeded < res[0].inventory){
-			var totalCost = res[0].price * amtNeeded;
+function purchaseOrder(ID, amountNeeded){
+    connection.query("SELECT * FROM products where id=" + ID, function(err, res){
+        if (err) throw err;
+        if(amountNeeded <= res[0].inventory){
+            var totalCost = res[0].price * amountNeeded;
+			
 			console.log("Your Order Is In Stock.");
 			console.log("Your total cost" +res[0].product + " is " + totalCost + " Thank You For Your Purchase.");
 
-			connection.query("UPDATE products SET inventory = inventory " + amtNeeded);
-		} else{
+			connection.query("update products set inventory = inventory - " + amountNeeded + " where id=" + ID);
+            
+        } else{
 			console.log("Insufficient Quantity To Complete Your Order.");
 		};
-		start();
+		readProducts();
+		connection.end();
 	});
 };
+function readProducts() {
+    connection.query("select * from products", function(err, res) {
+        if (err) throw err;
 
+        console.table(res);
+    })
+};
 start();
