@@ -6,25 +6,26 @@ Bamazon is a command line Node Application that allows the user to view, purchas
 
 # APPLICATION
 
-Start by running "node bamazonManager.js" in the terminal.
+Start by running "node bamazonManager.js or bamazonCustomer.js" in the terminal.
 Follow the prompts by either inputing or using the arrow keys to make a selection.
 
-# WORKING EXAMPLES
+# WORKING EXAMPLES BAMAZON CUSTOMER
+
+
+
+# WORKING EXAMPLES BAMAZON MANAGER
 
 RUNNING BAMAZON MANAGER
-![example-one](/Images/example1.jpeg)
+![start](/Images/example1.jpeg)
 
 SELECTING "VIEW PRODUCTS FOR SALE"
-![example-two](/Images/example2.jpeg)
+![viewProducts](/Images/example2.jpeg)
 
 SELECTING "VIEW LOW INVENTORY"
-![example-three](/Images/example3.jpeg)
+![lowInventory](/Images/example3.jpeg)
 
 ADDING INVENTORY
-![example-four](/Images/example4.jpeg)
+![addInventory](/Images/example4.jpeg)
 
 ADDING A NEW PRODUCT
-![example-five](/Images/example5.jpeg)
-
-
-
+![addProduct](/Images/example5.jpeg)
